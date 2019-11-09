@@ -25,13 +25,30 @@ class TreeTopo(Topo):
 
 	# Add hosts
     # > self.addHost('h%d' % [HOST NUMBER])
+    for i in (1, 8):
+        self.addHost('h%d' % [i])
 
 	# Add switches
+    for i in (1, 5):
+        self.addSwitch('s{}' % [i]))
     # > sconfig = {'dpid': "%016x" % [SWITCH NUMBER]}
     # > self.addSwitch('s%d' % [SWITCH NUMBER], **sconfig)
 
+    
 	# Add links
 	# > self.addLink([HOST1], [HOST2])
+    self.addLink(h1, s1, bw=10)
+    self.addLink(h2, s1, bw=10)
+    self.addLink(h3, s2, bw=10)
+    self.addLink(h4, s2, bw=10)
+    self.addLink(h5, s3, bw=10)
+    self.addLink(h6, s3, bw=10)
+    self.addLink(h7, s3, bw=10)
+    self.addLink(s1, s2, bw=100)
+    self.addLink(s2, s3, bw=100)
+    self.addLink(s3, s4, bw=100)
+    self.addLink(s1, s4, bw=100)
+
 
 def startNetwork():
     info('** Creating the tree network\n')
