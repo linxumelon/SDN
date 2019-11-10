@@ -65,7 +65,7 @@ def startNetwork():
 
     global net
     net = Mininet(topo=topo, link = TCLink,
-                  controller=lambda name: RemoteController(name, ip='SERVER IP'),
+                  controller=lambda name: RemoteController(name, ip='192.168.56.1'),
                   listenPort=6633, autoSetMacs=True)
 
     info('** Starting the network\n')
