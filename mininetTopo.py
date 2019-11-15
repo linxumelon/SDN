@@ -36,10 +36,14 @@ class TreeTopo(Topo):
         h7 = self.addHost('h7')
 
 	# Add switches
-    	s1 = self.addSwitch('s1')
-        s2 = self.addSwitch('s2')
-        s3 = self.addSwitch('s3')
-        s4 = self.addSwitch('s4')
+        sconfig1 = {'dpid': "%016x" % 1}
+    	s1 = self.addSwitch('s1', **sconfig1)
+        sconfig2 = {'dpid': "%016x" % 2}
+        s2 = self.addSwitch('s2', **sconfig2)
+        sconfig3 = {'dpid': "%016x" % 3}
+        s3 = self.addSwitch('s3', **sconfig3)
+        sconfig4 = {'dpid': "%016x" % 4}
+        s4 = self.addSwitch('s4', **sconfig4)
     	# > sconfig = {'dpid': "%016x" % [SWITCH NUMBER]}
     	# > self.addSwitch('s%d' % [SWITCH NUMBER], **sconfig)
 
@@ -47,16 +51,16 @@ class TreeTopo(Topo):
 	# Add links
 	# > self.addLink([HOST1], [HOST2])
    	self.addLink(h1, s1, bw=10)
-    	self.addLink(h2, s1, bw=10)
-    	self.addLink(h3, s2, bw=10)
-    	self.addLink(h4, s2, bw=10)
-    	self.addLink(h5, s3, bw=10)
-    	self.addLink(h6, s3, bw=10)
-    	self.addLink(h7, s3, bw=10)
-    	self.addLink(s1, s2, bw=100)
-    	self.addLink(s2, s3, bw=100)
-    	self.addLink(s3, s4, bw=100)
-    	self.addLink(s1, s4, bw=100)
+    self.addLink(h2, s1, bw=10)
+    self.addLink(h3, s2, bw=10)
+    self.addLink(h4, s2, bw=10)
+    self.addLink(h5, s3, bw=10)
+    self.addLink(h6, s3, bw=10)
+    self.addLink(h7, s3, bw=10)
+    self.addLink(s1, s2, bw=100)
+    self.addLink(s2, s3, bw=100)
+    self.addLink(s3, s4, bw=100)
+    self.addLink(s1, s4, bw=100)
 
 
 def startNetwork():
@@ -65,7 +69,7 @@ def startNetwork():
 
     global net
     net = Mininet(topo=topo, link = TCLink,
-                  controller=lambda name: RemoteController(name, ip='SERVER IP'),
+                  controller=lambda name: RemoteController(name, ip=192.168.1.143.
                   listenPort=6633, autoSetMacs=True)
 
     info('** Starting the network\n')
@@ -96,3 +100,4 @@ if __name__ == '__main__':
     # Tell mininet to print useful information
     setLogLevel('info')
     startNetwork()
+    
