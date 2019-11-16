@@ -22,8 +22,11 @@ class TreeTopo(Topo):
 			
     def __init__(self):
 		# Initialize topology
+            self.link_to_bw = dict()
+            self.setup_topo(TOPO_FILE_NAME)
+            self.create_queues()
 	Topo.__init__(self)   
-    self.link_to_bw = dict()
+
 
     def create_one_queue(port, bw):
         command = 'sudo ovs-vsctl -- set Port %s qos=@newqos \
@@ -81,8 +84,6 @@ def startNetwork():
                   controller=lambda name: RemoteController(name, ip="192.168.1.143",
                   listenPort=6633, autoSetMacs=True)
 
-    topo.setup_topo(TOPO_FILE_NAME)
-    topo.create_queues()
     info('** Starting the network\n')
     net.start()
     #net.pingAll()
