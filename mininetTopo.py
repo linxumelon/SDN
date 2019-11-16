@@ -25,7 +25,7 @@ class TreeTopo(Topo):
 		# Initialize topology
         self.link_to_bw = dict()
         self.setup_topo(TOPO_FILE_NAME)
-        self.create_queues()
+        
 
 
     def create_one_queue(self, port, bw):
@@ -90,6 +90,7 @@ def startNetwork():
 
     info('** Starting the network\n')
     net.start()
+    topo.create_queues()
     #net.pingAll()
     # Create QoS Queues
 
