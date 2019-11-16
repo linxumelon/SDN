@@ -56,9 +56,9 @@ class TreeTopo(Topo):
         topo_file = open(topo_file_name)     
         topo = topo_file.readlines()
         metadata = topo[0].split()
-        num_of_host = metadata[0]
-        num_of_switch = metadata[1]
-        num_of_link = metadata[2]
+        num_of_host = int(metadata[0])
+        num_of_switch = int(metadata[1])
+        num_of_link = int(metadata[2])
         for i in range(num_of_host):
             self.addHost('h%d' % (i + 1))
         for i in range(num_of_switch):
