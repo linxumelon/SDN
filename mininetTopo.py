@@ -67,11 +67,11 @@ class TreeTopo(Topo):
         cursor = 1
         for i in range(num_of_link):
             link = metadata[cursor].rstrip('\r\n').split(',')
-            link_to_bw[[link[0]], link[1]] = int(link[2]) * 1000000
+            link_to_bw[link[0], link[1]] = int(link[2]) * 1000000
             cursor += 1
 
         for link in link_to_bw.keys():
-            self.addLink(link[0], link[1], link_to_bw[[link[0]], link[1]])
+            self.addLink(link[0], link[1], link_to_bw[link[0], link[1]])
         
 
 
