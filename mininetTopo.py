@@ -21,11 +21,11 @@ TOPO_FILE_NAME = 'topology.in'
 class TreeTopo(Topo):
 			
     def __init__(self):
+        Topo.__init__(self) 
 		# Initialize topology
-            self.link_to_bw = dict()
-            self.setup_topo(TOPO_FILE_NAME)
-            self.create_queues()
-	Topo.__init__(self)   
+        self.link_to_bw = dict()
+        self.setup_topo(TOPO_FILE_NAME)
+        self.create_queues()
 
 
     def create_one_queue(port, bw):
