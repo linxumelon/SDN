@@ -70,7 +70,7 @@ class TreeTopo(Topo):
             print(link)
             link_to_bw['%s-%s' % (link[0], link[1])] = int(link[2]) * 1000000
             link_to_bw['%s-%s' % (link[1], link[0])] = int(link[2]) * 1000000
-            self.addLink(link[0], link[1], int(link[2]) * 1000000)
+            self.addLink(link[0], link[1])
             print("adding in one more link")
             cursor += 1
 
