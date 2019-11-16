@@ -66,7 +66,7 @@ class TreeTopo(Topo):
             self.addSwitch('s%d' % (i + 1), **sconfig)
         cursor = 1
         for i in range(num_of_link):
-            link = metadata[cursor].split(',').rstrip('\r\n')
+            link = metadata[cursor].rstrip('\r\n').split(',')
             link_to_bw[[link[0]], link[1]] = int(link[2]) * 1000000
             cursor += 1
 
