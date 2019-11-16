@@ -28,7 +28,7 @@ class TreeTopo(Topo):
         self.create_queues()
 
 
-    def create_one_queue(port, bw):
+    def create_one_queue(self, port, bw):
         command = 'sudo ovs-vsctl -- set Port %s qos=@newqos \
                 -- --id=@newqos create QoS type=linux-htb other-config:max-rate=%i queues=0=@q0,1=@q1 \
                 -- --id=@q0 create queue other-config:min-rate=%i \
@@ -36,17 +36,17 @@ class TreeTopo(Topo):
         os.system(command)
     
     def create_queues(self):
-        for link in topo.links(True, False, True):
+        for link in self.links(True, False, True):
             left = link[0]
             right = link[1]
-            bw = self.link_to_bw[left, right]
+            bw = self.link_to_bw['%s-%s' % (left, right)]
             if 's' in left:
                 interface = left + '-eth' + str(link[2]['port1'])
-                create_one_queue(interface, bw)
+                self.create_one_queue(interface, bw)
                 print("create queues for {}".format(left))
             if 's' in right:
                 interface = right + '-eth' + str(link[2]['port2'])
-                create_one_queue(interface, bw)
+                self.create_one_queue(interface, bw)
                 print("create queues for {}".format(right))
             
 	
@@ -66,12 +66,16 @@ class TreeTopo(Topo):
             self.addSwitch('s%d' % (i + 1), **sconfig)
         cursor = 1
         for i in range(num_of_link):
-            link = metadata[cursor].rstrip('\r\n').split(',')
-            link_to_bw[link[0], link[1]] = int(link[2]) * 1000000
+            link = topo[cursor].split(',')
+            print(link)
+            link_to_bw['%s-%s' % (link[0], link[1])] = int(link[2]) * 1000000
+            link_to_bw['%s-%s' % (link[1], link[0])] = int(link[2]) * 1000000
+            self.addLink(link[0], link[1], int(link[2]) * 1000000)
+            print("adding in one more link")
             cursor += 1
 
-        for link in link_to_bw.keys():
-            self.addLink(link[0], link[1], link_to_bw[link[0], link[1]])
+        self.link_to_bw = link_to_bw
+        print(self.link_to_bw)
         
 
 
