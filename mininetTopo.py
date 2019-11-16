@@ -50,7 +50,7 @@ class TreeTopo(Topo):
 	# You can write other functions as you need.
     def setup_topo(self, topo_file_name):
         link_to_bw = dict()
-        topo_file = open(TOPO_FILE_NAME)     
+        topo_file = open(topo_file_name)     
         topo = topo_file.readlines()
         metadata = topo[0].split()
         num_of_host = metadata[0]
@@ -75,14 +75,14 @@ class TreeTopo(Topo):
 def startNetwork():
     info('** Creating the tree network\n')
     topo = TreeTopo()
-
+    
     global net
     net = Mininet(topo=topo, link = TCLink,
                   controller=lambda name: RemoteController(name, ip="192.168.1.143",
                   listenPort=6633, autoSetMacs=True)
 
-    self.setup_topo(TOPO_FILE_NAME)
-    self.create_queues()
+    topo.setup_topo(TOPO_FILE_NAME)
+    topo.create_queues()
     info('** Starting the network\n')
     net.start()
     #net.pingAll()
