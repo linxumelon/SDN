@@ -16,51 +16,60 @@ from mininet.link import TCLink
 from mininet.node import RemoteController
 
 net = None
+TOPO_FILE_NAME = 'topology.in'
 
 class TreeTopo(Topo):
 			
     def __init__(self):
 		# Initialize topology
-	Topo.__init__(self)        
+	Topo.__init__(self)   
+    self.link_to_bw = dict()
+
+    def create_one_queue(port, bw):
+        command = 'sudo ovs-vsctl -- set Port %s qos=@newqos \
+                -- --id=@newqos create QoS type=linux-htb other-config:max-rate=%i queues=0=@q0,1=@q1 \
+                -- --id=@q0 create queue other-config:min-rate=%i \
+                -- --id=@q1 create queue other-config:max-rate=%i' % (port, bw, 0.8*bw, 0.5*bw)
+        os.system(command)
+    
+    def create_queues(self):
+        for link in topo.links(True, False, True):
+            left = link[0]
+            right = link[1]
+            bw = self.link_to_bw[left, right]
+            if 's' in left:
+                interface = left + '-eth' + str(link[2]['port1'])
+                create_one_queue(interface, bw)
+                print("create queues for {}".format(left))
+            if 's' in right:
+                interface = right + '-eth' + str(link[2]['port2'])
+                create_one_queue(interface, bw)
+                print("create queues for {}".format(right))
+            
 	
 	# You can write other functions as you need.
+    def setup_topo(self, topo_file_name):
+        link_to_bw = dict()
+        topo_file = open(TOPO_FILE_NAME)     
+        topo = topo_file.readlines()
+        metadata = topo[0].split()
+        num_of_host = metadata[0]
+        num_of_switch = metadata[1]
+        num_of_link = metadata[2]
+        for i in range(num_of_host):
+            self.addHost('h%d' % (i + 1))
+        for i in range(num_of_switch):
+            sconfig = {'dpid' : "%016x" % (i + 1)}
+            self.addSwitch('s%d' % (i + 1), **sconfig)
+        cursor = 1
+        for i in range(num_of_link):
+            link = metadata[cursor].split(',').rstrip('\r\n')
+            link_to_bw[[link[0]], link[1]] = int(link[2]) * 1000000
+            cursor += 1
 
-	# Add hosts
-    	# > self.addHost('h%d' % [HOST NUMBER])
-    	h1 = self.addHost('h1')
-        h2 = self.addHost('h2')
-        h3 = self.addHost('h3')
-        h4 = self.addHost('h4')
-        h5 = self.addHost('h5')
-        h6 = self.addHost('h6')
-        h7 = self.addHost('h7')
-
-	# Add switches
-        sconfig1 = {'dpid': "%016x" % 1}
-    	s1 = self.addSwitch('s1', **sconfig1)
-        sconfig2 = {'dpid': "%016x" % 2}
-        s2 = self.addSwitch('s2', **sconfig2)
-        sconfig3 = {'dpid': "%016x" % 3}
-        s3 = self.addSwitch('s3', **sconfig3)
-        sconfig4 = {'dpid': "%016x" % 4}
-        s4 = self.addSwitch('s4', **sconfig4)
-    	# > sconfig = {'dpid': "%016x" % [SWITCH NUMBER]}
-    	# > self.addSwitch('s%d' % [SWITCH NUMBER], **sconfig)
-
-    
-	# Add links
-	# > self.addLink([HOST1], [HOST2])
-   	self.addLink(h1, s1, bw=10)
-    self.addLink(h2, s1, bw=10)
-    self.addLink(h3, s2, bw=10)
-    self.addLink(h4, s2, bw=10)
-    self.addLink(h5, s3, bw=10)
-    self.addLink(h6, s3, bw=10)
-    self.addLink(h7, s3, bw=10)
-    self.addLink(s1, s2, bw=100)
-    self.addLink(s2, s3, bw=100)
-    self.addLink(s3, s4, bw=100)
-    self.addLink(s1, s4, bw=100)
+        for link in link_to_bw.keys():
+            self.addLink(link[0], link[1], link_to_bw[[link[0]], link[1]])
+        
 
 
 def startNetwork():
@@ -72,15 +81,12 @@ def startNetwork():
                   controller=lambda name: RemoteController(name, ip=192.168.1.143,
                   listenPort=6633, autoSetMacs=True)
 
+    self.setup_topo(TOPO_FILE_NAME)
+    self.create_queues()
     info('** Starting the network\n')
     net.start()
     #net.pingAll()
     # Create QoS Queues
-    # > os.system('sudo ovs-vsctl -- set Port [INTERFACE] qos=@newqos \
-    #            -- --id=@newqos create QoS type=linux-htb other-config:max-rate=[LINK SPEED] queues=0=@q0,1=@q1,2=@q2 \
-    #            -- --id=@q0 create queue other-config:max-rate=[LINK SPEED] other-config:min-rate=[LINK SPEED] \
-    #            -- --id=@q1 create queue other-config:min-rate=[X] \
-    #            -- --id=@q2 create queue other-config:max-rate=[Y]')
 
     info('** Running CLI\n')
     CLI(net)
