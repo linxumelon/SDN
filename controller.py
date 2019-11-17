@@ -256,3 +256,4 @@ def launch():
     # Starting the controller module
     core.registerNew(Controller)
 
+    
